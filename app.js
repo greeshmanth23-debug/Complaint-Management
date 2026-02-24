@@ -43,8 +43,10 @@ app.get('/student',async (req,res)=>{
     const solutions=await solutionmodel.find({username:req.session.username});
     res.render('student',{complaints,solutions});
 });
-app.listen(3000,()=>{
-    console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
 app.post('/admin-save',async (req,res)=>{
     if(!req.session || !req.session.username){
