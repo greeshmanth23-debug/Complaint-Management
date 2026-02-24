@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    
+<div class="header">
+    <h1>Post your complaint</h1>
+</div>
+<div class="body">
+    <form action="/student-save" method="POST">
+        <label for="username">Student ID:</label>
+        <input type="text" id="username" name="username"><br><br>
+        <label for="dept">Department:</label>
+        <input type="text" id="dept" name="dept"><br><br>      
+        <label for="complaint">Complaint:</label><br>
+        <textarea id="complaint" name="complaint" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Submit Complaint</button>
+    </form>
+</div>
+<div class="complaints">
+    <h2>Previous Complaints:</h2>
+    <ul>
+        <% complaints.forEach(function(complaint) { %>
+            <li class="complaint-item">
+                <strong>ID:</strong> <%= complaint.username %> | 
+                <strong>Department:</strong> <%= complaint.dept %> | 
+                <strong>Complaint:</strong> <%= complaint.complaint %>
+            </li>
+        <% }); %> 
+    </ul>
+    <h2>solutions:</h2>
+    <ul>
+        <% solutions.forEach(function(solution) { %>
+            <li class="complaint-item">
+                <strong>ID:</strong> <%= solution.username %> | 
+                <strong>Complaint:</strong> <%= solution.solution %>
+            </li>
+        <% }); %> 
+    </ul>
+    <form action="/logout" method="POST">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+</body>
+</html>
