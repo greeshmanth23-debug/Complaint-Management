@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express=require('express');
 const app=express();
 const session = require('express-session');
@@ -7,6 +8,7 @@ const bodyParser=require('body-parser');
 const studentmodel=require('./models/student');
 const rolemodel=require('./models/role');
 const solutionmodel=require('./models/solution');
+
 mongoose.connect(process.env.MONGO_URI).then(()=>{
     console.log('connected to database atlas');
 }).catch((err)=>{
@@ -21,7 +23,8 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended:true}));
-app.set('view engine','ejs');
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.get('/',(req,res)=>{
     res.render('index');
 });
