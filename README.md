@@ -150,7 +150,6 @@ Fields:
 - Separate Storage of Resolved Solutions
 - Lightweight and Efficient Workflow
 - Role-Based Access Control
-- 
 ---
 
 # ✨ Project is live on
