@@ -152,6 +152,28 @@ Fields:
 - Role-Based Access Control
 ---
 
+# The visual proofs
+# Admin page
+-Admin page
+<img width="2880" height="5922" alt="screencapture-localhost-3000-admin-2026-03-01-21_46_51" src="https://github.com/user-attachments/assets/c9c3e524-21f1-4fd3-ba67-b7bd85c09306" />
+-Add products section
+<img width="1048" height="549" alt="Screenshot 2026-03-01 at 9 35 56 PM" src="https://github.com/user-attachments/assets/d6a53374-24b2-483c-bd2e-e58344612c59" />
+-Products section
+<img width="1371" height="801" alt="Screenshot 2026-03-01 at 9 36 44 PM" src="https://github.com/user-attachments/assets/fa4cacbb-69ef-49a0-807d-f75e256b580f" />
+-Orders section
+
+# User side
+-Header and dashboard
+<img width="2880" height="3914" alt="screencapture-localhost-3000-user-2026-03-01-21_39_56" src="https://github.com/user-attachments/assets/728574d0-b973-4726-b24c-4f3c28545876" />
+-Products page
+<img width="2880" height="1960" alt="screencapture-localhost-3000-userproducts-2026-03-01-21_40_55" src="https://github.com/user-attachments/assets/707b1fac-dd67-4602-a3f9-da41ec5ab902" />
+-Cart
+<img width="1400" height="778" alt="Screenshot 2026-03-01 at 9 42 30 PM" src="https://github.com/user-attachments/assets/bf3b1358-dc16-4cbd-9233-c6e83f742d13" />
+-Orders page
+<img width="2880" height="3834" alt="screencapture-localhost-3000-orders-2026-03-01-21_44_16" src="https://github.com/user-attachments/assets/22e6955a-12df-4c02-8ad0-1f36060f655e" />
+
+---
+
 # ✨ Project is live on
 
 ```
