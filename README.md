@@ -151,7 +151,12 @@ Fields:
 - Lightweight and Efficient Workflow
 - Role-Based Access Control
 ---
+# Live demo images
+# User dashboard:
+<img width="1348" height="801" alt="Screenshot 2026-03-01 at 10 31 50 PM" src="https://github.com/user-attachments/assets/5e72da2a-3ad4-4222-909b-04b6b105dafa" />
 
+# Admin dasboard:
+<img width="1144" height="806" alt="Screenshot 2026-03-01 at 10 32 49 PM" src="https://github.com/user-attachments/assets/b5fd5d4b-5b7c-43ce-8291-b6a9eafefdbc" />
 
 ---
 
