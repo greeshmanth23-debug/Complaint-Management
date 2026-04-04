@@ -1,19 +1,18 @@
 require('dotenv').config();
 const path = require('path');
-const express=require('express');
-const app=express();
+const express = require('express');
+const app = express();
 const session = require('express-session');
-const mongoose=require('mongoose');
-const bodyParser=require('body-parser');
-const studentmodel=require('./models/student');
-const rolemodel=require('./models/role');
-const solutionmodel=require('./models/solution');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
-mongoose.connect(process.env.MONGO_URI).then(()=>{
-    console.log('connected to database atlas');
-}).catch((err)=>{
-    console.log(err);
-});
+const studentmodel = require('./models/student');
+const rolemodel = require('./models/role');
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log('Connected to MongoDB Atlas'))
+.catch((err) => console.log(err));
+
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
@@ -22,53 +21,72 @@ app.use(session({
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.get('/',(req,res)=>{
-    res.render('index');
-});
-app.get('/register',(req,res)=>{
-    res.render('register');
-});
-app.get('/admin',async (req,res)=>{
-    if(!req.session || !req.session.username){
-        return res.redirect('/');
-    }
-    const complaints=await studentmodel.find({dept:req.session.username});
-    res.render('admin',{complaints});
-});
-app.get('/student',async (req,res)=>{
-    if(!req.session || !req.session.username){
-        return res.redirect('/');
-    }
-    const complaints=await studentmodel.find({username:req.session.username});
-    const solutions=await solutionmodel.find({username:req.session.username});
-    res.render('student',{complaints,solutions});
-});
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+/* ================== ROUTES ================== */
+
+app.get('/', (req, res) => {
+    res.render('index');
 });
-app.post('/admin-save',async (req,res)=>{
-    if(!req.session || !req.session.username){
-        return res.redirect('/');
-    }
-    const{username,dept,solution}=req.body;
-    const solutions=new solutionmodel({username,dept,solution});
-    await solutions.save();
-    await studentmodel.findOneAndDelete({username:req.body.username});
+
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+/* ================== ADMIN PAGE ================== */
+
+app.get('/admin', async (req, res) => {
+    if (!req.session.username) return res.redirect('/');
+
+    const complaints = await studentmodel
+        .find({ dept: req.session.username })
+        .sort({ _id: -1 });
+
+    res.render('admin', { complaints });
+});
+
+/* ================== STUDENT PAGE ================== */
+
+app.get('/student', async (req, res) => {
+    if (!req.session.username) return res.redirect('/');
+
+    const complaints = await studentmodel
+        .find({ username: req.session.username })
+        .sort({ _id: -1 });
+
+    res.render('student', { complaints });
+});
+
+/* ================== ADMIN SAVE (SOLVE COMPLAINT) ================== */
+
+app.post('/admin-save', async (req, res) => {
+    if (!req.session.username) return res.redirect('/');
+
+    const { complaintId, solution } = req.body;
+
+    await studentmodel.findByIdAndUpdate(complaintId, {
+        solution: solution,
+        status: 'solved'
+    });
+
     res.redirect('/admin');
 });
 
+/* ================== STUDENT POST COMPLAINT ================== */
 
-app.post('/student-save', async (req,res)=>{
-    if(!req.session || !req.session.username){
-        return res.redirect('/');
-    }
-    const check=await rolemodel.findOne({username:req.body.dept});
-    if(!check){
+app.post('/student-save', async (req, res) => {
+    if (!req.session.username) return res.redirect('/');
+
+    const { username, dept, complaint } = req.body;
+
+    const checkDept = await rolemodel.findOne({ username: dept });
+
+    if (!checkDept) {
         return res.send(`
             <script>
                 alert("Department not found");
@@ -76,31 +94,56 @@ app.post('/student-save', async (req,res)=>{
             </script>
         `);
     }
-    const {username,dept,complaint}=req.body;
-    const student=new studentmodel({username,dept,complaint});
-    await student.save();
+
+    const newComplaint = new studentmodel({
+        username,
+        dept,
+        complaint,
+        status: 'posted',
+        solution: ''
+    });
+
+    await newComplaint.save();
+
     res.redirect('/student');
 });
-app.post('/login',async (req,res)=>{
-    const check=await rolemodel.findOne({username:req.body.username,password:req.body.password});
-    
-    if(!check){
-        return res.send('<script>alert("Invalid credentials");window.location.href = "/";</script>');
+
+/* ================== LOGIN ================== */
+
+app.post('/login', async (req, res) => {
+
+    const check = await rolemodel.findOne({
+        username: req.body.username,
+        password: req.body.password
+    });
+
+    if (!check) {
+        return res.send(`
+            <script>
+                alert("Invalid credentials");
+                window.location.href = "/";
+            </script>
+        `);
     }
-    req.session.username=check.username;
-    if(check.role=='admin'){
-        const complaints=await studentmodel.find({dept:req.session.username});
-        res.render('admin',{complaints});
-    }
-    else if(check.role=='user'){
-        const complaints=await studentmodel.find({username:req.session.username});
-        const solutions=await solutionmodel.find({username:req.session.username});
-        res.render('student',{complaints,solutions});
+
+    req.session.username = check.username;
+
+    if (check.role === 'admin') {
+        return res.redirect('/admin');
+    } else {
+        return res.redirect('/student');
     }
 });
-app.post('/register', async (req,res)=>{
-    const check=await rolemodel.findOne({username:req.body.username});
-    if(check){
+
+/* ================== REGISTER ================== */
+
+app.post('/register', async (req, res) => {
+
+    const check = await rolemodel.findOne({
+        username: req.body.username
+    });
+
+    if (check) {
         return res.send(`
             <script>
                 alert("Username already exists");
@@ -108,14 +151,26 @@ app.post('/register', async (req,res)=>{
             </script>
         `);
     }
-    const {username,password,role}=req.body;
-    const user=new rolemodel({username,password,role});
+
+    const { username, password, role } = req.body;
+
+    const user = new rolemodel({ username, password, role });
+
     await user.save();
-    console.log("saved successfully");
+
     res.redirect('/');
 });
-app.post('/logout',(req,res)=>{
-    req.session.destroy(()=>{
+
+/* ================== LOGOUT ================== */
+
+app.post('/logout', (req, res) => {
+    req.session.destroy(() => {
         res.redirect('/');
     });
+});
+
+/* ================== SERVER ================== */
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
